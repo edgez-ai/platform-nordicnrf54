@@ -46,6 +46,18 @@ class Nordicnrf54Platform(PlatformBase):
         ):
             self.packages[bootloader_pkg]["optional"] = False
 
+        if "zephyr" in frameworks:
+            for pkg_name in ("framework-zephyr", "tool-cmake", "tool-dtc", "tool-ninja", "tool-scons"):
+                if pkg_name in self.packages:
+                    self.packages[pkg_name]["optional"] = False
+
+            # Zephyr 4.3.0 requires an older GCC ARM package than Arduino here.
+            if "toolchain-gccarmnoneeabi" in self.packages:
+                self.packages["toolchain-gccarmnoneeabi"]["version"] = "~1.80201.0"
+
+            if not IS_WINDOWS and "tool-gperf" in self.packages:
+                self.packages["tool-gperf"]["optional"] = False
+
         jlink_conds = [
             "jlink" in variables.get(option, "")
             for option in ("upload_protocol", "debug_tool")

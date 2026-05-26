@@ -8,6 +8,9 @@
     "extra_flags": "-DARDUINO_XIAO_NRF54L15 -DNRF54L15_XXAA",
     "f_cpu": "128000000L",
     "mcu": "nrf54l15",
+    "zephyr": {
+      "variant": "xiao_nrf54l15/nrf54l15/cpuapp"
+    },
     "variant": "xiao_nrf54l15",
     "bsp": {
       "name": "adafruit"
@@ -35,7 +38,8 @@
     ]
   },
   "frameworks": [
-    "arduino"
+    "arduino",
+    "zephyr"
   ],
   "name": "Seeed XIAO nRF54L15",
   "upload": {

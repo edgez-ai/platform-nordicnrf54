@@ -8,6 +8,9 @@
     "extra_flags": "-DARDUINO_NRF54L15_DK -DNRF54L15_XXAA",
     "f_cpu": "128000000L",
     "mcu": "nrf54l15",
+    "zephyr": {
+      "variant": "nrf54l15dk/nrf54l15/cpuapp"
+    },
     "variant": "nrf54l15dk",
     "bsp": {
       "name": "adafruit"
@@ -36,7 +39,8 @@
     ]
   },
   "frameworks": [
-    "arduino"
+    "arduino",
+    "zephyr"
   ],
   "name": "Nordic nRF54L15-DK",
   "upload": {
