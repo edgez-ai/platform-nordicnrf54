@@ -160,6 +160,22 @@ def _ensure_zephyr_script_permissions(framework_root):
 
 _ensure_zephyr_script_permissions(framework_dir)
 
+
+def _ensure_pre0_alias(build_dir):
+    zephyr_build_dir = join(build_dir, "zephyr")
+    os.makedirs(zephyr_build_dir, exist_ok=True)
+
+    src = join(zephyr_build_dir, "zephyr_pre0.elf")
+    dst = join(zephyr_build_dir, "firmware-pre0.elf")
+
+    if not os.path.isfile(src):
+        return
+
+    shutil.copyfile(src, dst)
+
+
+_ensure_pre0_alias(env.subst("$BUILD_DIR"))
+
 # Symlink platform-specific custom board definitions so Zephyr can discover them.
 platform_boards_dir = join(platform_dir, "zephyr", "boards", "arm")
 framework_boards_dir = join(framework_dir, "boards", "arm")
@@ -184,6 +200,18 @@ if os.path.isdir(platform_boards_dir):
 _preinstall_west_deps(framework_dir, env.subst("$PIOPLATFORM"))
 
 SConscript(join(framework_dir, "scripts", "platformio", "platformio-build.py"), exports="env")
+
+# PlatformIO expects firmware-pre0.elf for ISR generation, while Zephyr emits
+# zephyr_pre0.elf. Build the pre0 ELF and mirror it to the expected filename.
+build_dir = env.subst("$BUILD_DIR")
+ninja_bin = join(env.PioPlatform().get_package_dir("tool-ninja") or "", "ninja")
+if os.path.isfile(ninja_bin):
+    try:
+        subprocess.run([ninja_bin, "-C", build_dir, "zephyr/zephyr_pre0.elf"], check=True)
+    except subprocess.CalledProcessError:
+        pass
+
+_ensure_pre0_alias(build_dir)
 
 if board_name and "nrf" in board_name:
     env.Replace(PIOPLATFORM=platform_name)
